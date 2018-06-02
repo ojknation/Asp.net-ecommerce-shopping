@@ -454,6 +454,7 @@ namespace Shop14.Areas.Admin.Controllers
         [HttpPost]
         public void SaveGalleryImages(int id)
         {
+          
             //loop through files
             foreach (string fileName in Request.Files)
             {
@@ -467,6 +468,8 @@ namespace Shop14.Areas.Admin.Controllers
 
                     string pathString1 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery");
                     string pathString2 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs");
+
+
                     //set image paths
                     var path = string.Format("{0}\\{1}", pathString1, file.FileName);
                     var path2 = string.Format("{0}\\{1}", pathString2, file.FileName);
