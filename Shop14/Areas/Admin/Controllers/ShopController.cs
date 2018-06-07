@@ -454,9 +454,6 @@ namespace Shop14.Areas.Admin.Controllers
         [HttpPost]
         public void SaveGalleryImages(int id)
         {
-            //ProductVM model = new ProductVM();
-            //int id = model.Id;
-          
             //loop through files
             foreach (string fileName in Request.Files)
             {

@@ -109,7 +109,7 @@
 <link href="~/Scripts/dropzone/basic.css" rel="stylesheet" />
 <link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />
 
-@section Scripts {
+@section scripts {
     <script src="~/Scripts/dropzone/dropzone.js"></script>
     <script>
         $(function () {
@@ -144,8 +144,8 @@
                         }
                     });
 
-                    this.on("sending", function (file, xhr, formData) {
-                        formData.append("id", @Model.Id);
+                    this.on("sending", function (file, xhr, FormData) {
+                        FormData.set( "id", @Model.Id);
                     });
                 }
             };
