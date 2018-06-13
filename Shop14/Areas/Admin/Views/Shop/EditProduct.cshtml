@@ -143,10 +143,9 @@
                             location.reload();
                         }
                     });
-
-                    this.on("sending", function (file, xhr, FormData) {
-                        FormData.set( "id", @Model.Id);
-                    });
+                      this.on("sending", function (file, xhr,Formdata) {
+                        Formdata.append( "id", @Model.Id);
+                      });
                 }
             };
 

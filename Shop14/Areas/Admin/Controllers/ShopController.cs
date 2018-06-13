@@ -8,9 +8,11 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using PagedList;
+using Shop14.Areas.Admin.Models.ViewModels.Shop;
 
 namespace Shop14.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ShopController : Controller
     {
         // GET: Admin/Shop/Categories
@@ -132,7 +134,7 @@ namespace Shop14.Areas.Admin.Controllers
             //Init Model
             ProductVM model = new ProductVM();
 
-            //Add selsct list of category to model
+            //Add select list of category to model
             using(Db db = new Db())
             {
                 model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
@@ -496,6 +498,66 @@ namespace Shop14.Areas.Admin.Controllers
             if (System.IO.File.Exists(fullpath2))
                 System.IO.File.Delete(fullpath2);
 
+        }
+        public ActionResult Orders()
+        {
+            //init list of ordersforAdminVM
+            List<OrdersForAdminVM> ordersForAdmin = new List<OrdersForAdminVM>();
+
+            using (Db db = new Db())
+            {
+                //init list of OrderVM
+                List<OrderVM> orders = db.Orders.ToArray().Select(x => new OrderVM(x)).ToList();
+                //Loop through list of orderVM
+                foreach (var order in orders)
+                {
+                    //Init product dictionary
+                    Dictionary<string, int> productsAndQty = new Dictionary<string, int>();
+
+                    //Declare Total
+                    decimal total = 0m;
+
+                    //Init list of orderDetailsDTO
+                    List<OrderDetailsDTO> orderDetailsList = db.OrderDetails.Where(x => x.OrderId == order.OrderId).ToList();
+
+                    //Get Username
+                    UserDTO user = db.Users.Where(x => x.Id == order.UserId).FirstOrDefault();
+                    string username = user.Username;
+
+                    //loop through list of orderDetailsDTO
+                    foreach (var orderDetails in orderDetailsList)
+                    {
+                        //Get product
+                        ProductDTO product = db.Products.Where(x => x.Id == orderDetails.ProductId).FirstOrDefault();
+
+                        //Get product Price
+                        decimal price = product.Price;
+
+                        //Get product name
+                        string productName = product.Name;
+
+                        //add product to dictionary
+                        productsAndQty.Add(productName, orderDetails.Quantity);
+
+                        //Get total
+                        total = orderDetails.Quantity * price;
+                    }
+
+                    //Add to OrdersForAdminVMList
+                    ordersForAdmin.Add(new OrdersForAdminVM()
+                    {
+                        OrderNumber = order.OrderId,
+                        Username = username,
+                        Total = total,
+                        ProductsAndQty = productsAndQty,
+                        CreatedAt = order.CreatedAt
+                    });
+                    
+                }
+            }
+
+            //return view with ordersforAdminVM list
+            return View(ordersForAdmin);
         }
     }
 }

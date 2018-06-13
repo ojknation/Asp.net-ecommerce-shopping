@@ -13,20 +13,60 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 @Html.Action("PagesMenuPartial", "Pages")
+
+                @if (Request.IsAuthenticated)
+                {
+                    <li class="nav-item"><a href="/account/logout" class="nav-link">Logout</a></li>
+                }
+                else
+                {
+                    if (ViewBag.Title == "Login")
+                    {
+
+                        <li class="nav-item active"><a href="/account/login" class="nav-link">Login</a></li>
+
+                    }
+                    else
+                    {
+
+                        <li class="nav-item"><a href="/account/login" class="nav-link">Login</a></li>
+
+                    }
+
+                }
+                @if (Request.IsAuthenticated && User.IsInRole("User"))
+                {
+                    @Html.Action("UserNavPartial", "Account", new { area = "" })
+                }
             </ul>
-            <ul class="navbar-collapse collapse justify-content-end">
-                @Html.Action("CartPartial", "Cart")
-            </ul>
+
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <ul class="navbar-collapse collapse justify-content-end Adminarea">
+                    <li>@Html.ActionLink("Admin Area", "Index", "Dashboard", new { area = "Admin" }, null)</li>
+                </ul>
+            }
+            else
+            {
+                if (ViewBag.Title != "Cart Details")
+                {
+                    <ul class="navbar-collapse collapse justify-content-end">
+                        @Html.Action("CartPartial", "Cart")
+                    </ul>
+                }
+
+            }
         </div>
     </nav>
     <br />
+
     <div class="container body-content">
 
         <div class="row">
-
+            <div class="ajaxbg align-content-center"><img src="~/Content/Img/ajax-loader.gif" /><span class="text-center"></span></div>
             <div class="col-xs-12 col-md-2">
                 @Html.Action("CategoryMenuPartial", "Shop")
             </div>

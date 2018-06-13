@@ -187,5 +187,57 @@ namespace Shop14.Controllers
 
         }
 
+        public void PlaceOrder()
+        {
+            //Get the cart list
+            List<CartVM> cart = Session["cart"] as List<CartVM>;
+
+            // Get username
+            string username = User.Identity.Name;
+
+            
+            using (Db db = new Db())
+            {
+                //init orderDTO 
+                OrderDTO orderDTO = new OrderDTO();
+
+                int orderId = 0;
+
+                //Get UserId
+                var q = db.Users.FirstOrDefault(x => x.Username == username);
+                int userId = q.Id;
+
+                //Add to OrderDTO and Save
+                orderDTO.UserId = userId;
+                orderDTO.CreatedAt = DateTime.Now;
+
+                db.Orders.Add(orderDTO);
+                db.SaveChanges();
+
+                //Get insertedId
+                 orderId = orderDTO.OrderId;
+
+                //Init OrderDetailsDTO
+                OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+
+                //Add to OrderDetails DTO
+                foreach (var item in cart)
+                {
+                    orderDetailsDTO.OrderId = orderId;
+                    orderDetailsDTO.UserId = userId;
+                    orderDetailsDTO.ProductId = item.ProductId;
+                    orderDetailsDTO.Quantity = item.Quantity;
+
+                    db.OrderDetails.Add(orderDetailsDTO);
+                    db.SaveChanges();
+                }
+            }
+
+            //Email Admin
+
+            //Reset Session
+            Session["Cart"] = null;
+        }
+
     }
 }
